@@ -1,0 +1,8 @@
+{
+	/*Use Ctrl+Shift+Space*/
+    "codeintel_live": false,
+    "PHP": {
+        "php": "d:\\web\\php\\php.exe",
+        "codeintel_scan_exclude_dir": "d:\\web\\php\\"
+     }
+}
