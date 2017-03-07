@@ -6,7 +6,7 @@
 	{
 		private static $path;
 		private static $extension;
-		private static $default = 'default';
+		private static $default;
 		private static $connections = [];
 		public static function setPath ($path, $extension='.php')
 		{
@@ -38,15 +38,19 @@
 		{
 			if ($name===null)
 			{
-				$name = self::$default;
+				$name = self::$default===null?'default':self::$default;
 			}
 			self::$connections[$name] = $connection;
+			if (self::$default===null)
+			{
+				self::$default = $name;
+			}
 		}
 		public static function get ($name=null)
 		{
 			if ($name===null)
 			{
-				$name = self::$default;
+				$name = self::$default===null?'default':self::$default;
 			}
 			if (!isset(self::$connections[$name]) && !self::init($name))
 			{
