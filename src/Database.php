@@ -35,10 +35,10 @@
 			{
 				return false;
 			}
-			self::$handlers[$name] = new \PDO (self::$connections['dsn'],
-											   self::$connections['username'],
-											   self::$connections['password'],
-											   self::$connections['options']);
+			self::$handlers[$name] = new \PDO (self::$connections[$name]['dsn'],
+											   self::$connections[$name]['username'],
+											   self::$connections[$name]['password'],
+											   self::$connections[$name]['options']);
 			if (isset(self::$handlers[$name]))
 			{
 				return true;
