@@ -1,6 +1,6 @@
 <?php
 
-    namespace App;
+    namespace Core;
 
     use \Core\Entry;
     use \Core\Method;

@@ -4,19 +4,15 @@
 
     class View
     {
-        private static $path;
-        private static $extension;
-        public static function setPath ($path, $extension='.php')
-        {
-            self::$path = $path;
-            self::$extension = $extension;
-        }
+        private static $globals = [];
+        /**
+         * Render view
+         * @param  [type] $__name   [description]
+         * @param  array  $__values [description]
+         * @return [type]           [description]
+         */
         public static function render ($__name, $__values=[])
         {
-            if (self::$path===null)
-            {
-                trigger_error("[\\Core\\View] view path is not defined", E_USER_ERROR);
-            }
             if (is_array($__values) && count($__values))
             {
                 foreach ($__values as $__key => &$__value)
@@ -24,6 +20,24 @@
                     ${$__key} = $__value;
                 }
             }
-            include self::$path.'/'.str_replace(['/','\\'],'',$__name).self::$extension;
+            include APP.'/views/'.str_replace('.','',$__name).'.php';
+        }
+        /**
+         * Set global variable
+         * @param string $key key
+         * @param string $value value
+         */
+        public static function set ($key, $value)
+        {
+            self::$globals[$key] = $value;
+        }
+        /**
+         * Get global variable
+         * @param  string $key key
+         * @return mixed value
+         */
+        public static function get ($key)
+        {
+            return self::$globals[$key];
         }
     }
