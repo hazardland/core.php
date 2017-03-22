@@ -51,9 +51,6 @@ When you live in PHP world while developing various web Apps you are often requi
 
     ```
 
-
-
-
 2. Defining locales, Always having active locale
 
     ```php
@@ -64,9 +61,7 @@ When you live in PHP world while developing various web Apps you are often requi
         App::isLocale($locale);
     ```
 
-3. Define and work with locales
-
-4. Database handling, connet to server only when connection is required, hide connection setup from developers:
+3. Database handling, connet to server only when connection is required, hide connection setup from developers:
 
     ```php
         //config (u can have many connection definitions)
@@ -85,7 +80,7 @@ When you live in PHP world while developing various web Apps you are often requi
         Database::get()->query("SELECT 1");
     ```
 
-5. Abstract cache (some servers have APC some have APCu some of them even different caching engines) all you need is:
+4. Abstract cache (some servers have APC some have APCu some of them even different caching engines) all you need is:
 
     ```php
         //This line goes in config
@@ -98,7 +93,7 @@ When you live in PHP world while developing various web Apps you are often requi
         Cache::clean();
     ```
 
-6. Dealing with sessions, there are things you need to maintain when opening session, sometimes you need to open session with custom id, sometimes you need to have session name to separate one app session from another app session, for this you can use session class:
+5. Dealing with sessions, there are things you need to maintain when opening session, sometimes you need to open session with custom id, sometimes you need to have session name to separate one app session from another app session, for this you can use session class:
 
     ```php
         //this goes in config
