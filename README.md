@@ -1,7 +1,7 @@
 When you live in PHP world while developing various web Apps you are often required to have:
-1. Seo friendly nice urls
+1. Seo friendly nice urls:
 
-    ```
+    ```php
     en/about/
     fr/about/
     en/blog/123-cool-article
@@ -37,6 +37,18 @@ When you live in PHP world while developing various web Apps you are often requi
             View::render('user/profile',['user_id'=>$user_id]);
         }
     }
+    ```
+
+    Or just if you fill lazy you might do  not need controller at all just parse view in route declaration:
+    ```php
+    //We had this
+    Route::add('user/{id}', 'UserProfile@index');
+
+    //We can this instead also:
+    Route::add('user/{id}', function($user_id)(
+        View::render('user/profile',['user_id'=>$user_id]);
+    ));
+
     ```
 
 
