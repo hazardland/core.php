@@ -25,6 +25,22 @@ When you live in PHP world while developing various web Apps you are often requi
     Route::add('user/{id}', 'UserProfile@index');
     ```
 
+    Where ```UserProfile@index``` you can imagine as:
+    file at ```./app/src/Controller/UserProfile.php```
+    ```php
+    //file: ./app/src/Controller/UserProfile.php
+    namespace App\Controller;
+    class UserProfile
+    {
+        public function index ($user_id)
+        {
+            View::render('user/profile',['user_id'=>$user_id]);
+        }
+    }
+    ```
+
+
+
 
 2. Defining locales, Always having active locale
 
