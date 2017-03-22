@@ -79,4 +79,40 @@
         {
 
         }
+        public static function run ($query=null)
+        {
+            if ($query!==null)
+            {
+                if (strpos($query,'/')!==false)
+                {
+                    $locale = substr($query, 0, strpos($query,'/'));
+                    if (self::isLocale($locale))
+                    {
+                        self::setLocale($locale);
+                        $query = substr($query,strpos($query,'/')+1);
+                    }
+                }
+                else
+                {
+                    $locale = $query;
+                    if (self::isLocale($locale))
+                    {
+                        self::setLocale($locale);
+                        $query = '/';
+                    }
+                }
+            }
+            if ($query===null || $query=='')
+            {
+                $query = '/';
+            }
+            debug ($locale,'locale');
+            debug ($query,'query');
+            $action = Route::match ($query);
+            debug ($action, "action");
+            if ($action)
+            {
+                debug ($action->input($query), "input");
+            }
+        }
     }

@@ -2,18 +2,12 @@
 
     namespace Core;
 
-    use \Core\Entry;
-    use \Core\Method;
-
     class Route
     {
-
-        private static $pathes;
-        private static $entries = [];
+        public static $actions = []; //later make private
         private static $options = [];
         public static function add ($path, $callback, $method=null, $options=[])
         {
-            self::$pathes = null;
             if (!is_array($options))
             {
                 $options = [];
@@ -22,40 +16,20 @@
             {
                 $options = $options+self::$options;
             }
-            $entry = new Entry ($path, $callback, $method, $options);
-            self::$entries[] = $entry;
-            return $entry;
-        }
-        private static function build ()
-        {
-            if (!self::$entries || self::$pathes!==null) return;
-            self::$pathes = [];
-            foreach (self::$entries as $key => $entry)
-            {
-                self::$pathes[$key] = $entry->getRegex();
-            }
+            $action = new Action ($path, $callback, $method, $options);
+            self::$actions[] = $action;
+            return $action;
         }
         public static function match ($route)
         {
-            self::build();
-            if (!is_array(self::$pathes) || !self::$pathes) return;
-            $matches = [];
-            foreach (self::$pathes as $key => $pattern)
+            foreach (self::$actions as $action)
             {
-                $match = preg_match($pattern, $route);
-                debug ($match,$pattern);
-                if ($match===1)
+                if ($action->match($route))
                 {
-                    $matches[$key] = true;
+                    return $action;
                 }
             }
-            if (!$matches) return false;
-            $result = [];
-            foreach ($matches as $key => $value)
-            {
-                $result[$key] = self::$entries[$key];
-            }
-            return $result;
+            return false;
         }
         public static function get ($path, $callback, $options=[])
         {
