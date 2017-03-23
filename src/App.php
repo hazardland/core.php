@@ -4,8 +4,10 @@
 
     class App
     {
-        private static $locale;
         private static $locales = [];
+        private static $locale;
+        private static $request;
+        private static $action;
         /**
          * define new locale
          * @param string  $locale  locale code ex:en,ge,ru
@@ -79,40 +81,24 @@
         {
 
         }
-        public static function run ($query=null)
+        public static function getPath()
         {
-            if ($query!==null)
+            if (is_object(self::$action))
             {
-                if (strpos($query,'/')!==false)
-                {
-                    $locale = substr($query, 0, strpos($query,'/'));
-                    if (self::isLocale($locale))
-                    {
-                        self::setLocale($locale);
-                        $query = substr($query,strpos($query,'/')+1);
-                    }
-                }
-                else
-                {
-                    $locale = $query;
-                    if (self::isLocale($locale))
-                    {
-                        self::setLocale($locale);
-                        $query = '/';
-                    }
-                }
+                return self::$action->getPath();
             }
-            if ($query===null || $query=='')
+        }
+        public static function run (Request $request)
+        {
+            self::$request = $request;
+            self::$action = Route::getAction($request);
+            if (self::$action===false)
             {
-                $query = '/';
+                self::$action = Route::getDefault();
             }
-            debug ($locale,'locale');
-            debug ($query,'query');
-            $action = Route::match ($query);
-            debug ($action, "action");
-            if ($action)
+            if (self::$action)
             {
-                debug ($action->input($query), "input");
+                self::$action->execute(self::$request);
             }
         }
     }

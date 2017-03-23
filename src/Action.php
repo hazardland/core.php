@@ -4,11 +4,12 @@
 
     class Action
     {
-        public $path; //make later private
+        private $name;
+        private $path; //make later private
         private $callback;
         private $method;
         private $options;
-        public $inputs = []; //make later private
+        private $inputs = []; //make later private
         private $where = [];
         private $pattern;
         public function __construct ($path, $callback, $method=null, $options=[])
@@ -25,22 +26,28 @@
             $this->callback = $callback;
             $this->method = $method;
         }
-        public function isClosure()
-        {
-            return is_object($this->callback) && ($this->callback instanceof Closure);
-        }
         public function where ($name, $type)
         {
             $this->reset ();
             $this->where[$name] = $type;
             return $this;
         }
+        public function name ($name)
+        {
+            $this->name = $name;
+            Route::name ($name, $this);
+            return $this;
+        }
+        public function getPath()
+        {
+            return $this->path;
+        }
         private function reset ()
         {
             $this->inputs = [];
             $this->pattern = null;
         }
-        private function pattern ()
+        private function getPattern ()
         {
             if ($this->pattern===null)
             {
@@ -58,7 +65,7 @@
                         $name = substr($match,2,-2);
                         $input = new Input ($name,(isset($this->where[$name])?$this->where[$name]:0));
                         //debug ($name,$this->path);
-                        $pattern = str_replace ($match,$input->pattern(),$pattern);
+                        $pattern = str_replace ($match,$input->getPattern(),$pattern);
                         $this->inputs[] = $input;
                     }
                 }
@@ -67,39 +74,63 @@
             }
             return $this->pattern;
         }
-        public function match ($route)
+        public function isActive (Request $request)
         {
-            if ($route==='/' && $this->path==='/')
+            //debug ($this->method);
+            //debug($request->getMethod());
+            //debug ($this->getPattern(), $this->path);
+            if ($this->method!==null && $this->method!=$request->getMethod())
+            {
+                return false;
+            }
+            if ($request->getPath()==='/' && $this->path==='/')
             {
                 return true;
             }
-            $result = preg_match($this->pattern(), $route);
+            $result = preg_match($this->getPattern(), $request->getPath());
             if ($result===1)
             {
                 return true;
             }
             return false;
         }
-        public function input ($route)
+        public function getInput ($path)
         {
-            if ($route==='/' && $this->path==='/')
+            if ($path==='/' && $this->path==='/')
             {
                 return [];
             }
             $matches = [];
-            preg_match_all($this->pattern(), $route, $matches, PREG_SET_ORDER);
+            preg_match_all($this->getPattern(), $path, $matches, PREG_SET_ORDER);
             if (!isset($matches[0]) || count($matches[0])<=1) return [];
             $result = [];
             foreach ($matches[0] as $key=>$value)
             {
                 if ($key==0) continue;
-                $result[$this->inputs[$key-1]->name()] = $value;
+                $result[$this->inputs[$key-1]->getName()] = $value;
             }
             return $result;
         }
-        public function execute ($route)
+        public function fillPath ($args)
         {
-
+            $this->getPattern();
+            $result = $this->path;
+            if ($this->inputs)
+            {
+                //debug ($args);
+                foreach ($this->inputs as $input)
+                {
+                    $result = str_replace ('{'.$input->getName().'}',$args[$input->getName()],$result);
+                }
+            }
+            return $result;
+        }
+        public function execute (Request $request)
+        {
+            if (is_object($this->callback))
+            {
+                call_user_func_array ($this->callback, $this->getInput($request->getPath()));
+            }
         }
 
     }

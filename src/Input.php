@@ -21,7 +21,7 @@
             $this->name = $name;
             $this->type = $type;
         }
-        public function pattern()
+        public function getPattern()
         {
             if ($this->type==Input::INTEGER)
             {
@@ -41,11 +41,11 @@
             }
             return '([a-zA-Z0-9@\-\.\;\,]+)';
         }
-        public function name()
+        public function getName()
         {
             return $this->name;
         }
-        public function type()
+        public function getType()
         {
             return $this->type;
         }

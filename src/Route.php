@@ -4,8 +4,30 @@
 
     class Route
     {
+        public static $default;
         public static $actions = []; //later make private
         private static $options = [];
+        private static $names = [];
+        /**
+         * find and return action for request if any
+         * @param  \Core\Request $request [description]
+         * @return \Core\Action           [description]
+         */
+        public static function getAction (Request $request)
+        {
+            foreach (self::$actions as $action)
+            {
+                if ($action->isActive($request))
+                {
+                    return $action;
+                }
+            }
+            return false;
+        }
+        public static function getDefault()
+        {
+            return self::$default;
+        }
         public static function add ($path, $callback, $method=null, $options=[])
         {
             if (!is_array($options))
@@ -18,18 +40,11 @@
             }
             $action = new Action ($path, $callback, $method, $options);
             self::$actions[] = $action;
-            return $action;
-        }
-        public static function match ($route)
-        {
-            foreach (self::$actions as $action)
+            if ($action->getPath()=='/')
             {
-                if ($action->match($route))
-                {
-                    return $action;
-                }
+                self::$default = $action;
             }
-            return false;
+            return $action;
         }
         public static function get ($path, $callback, $options=[])
         {
@@ -46,6 +61,22 @@
         public static function delete ($path, $callback, $options=[])
         {
             return self::add ($path, $callback, Method::POST, $options);
+        }
+        public static function name ($name, $action)
+        {
+            self::$names[$name] = $action;
+        }
+        public static function url ($name, $args, $locale=null)
+        {
+            if (isset(self::$names[$name]))
+            {
+                if ($locale==null)
+                {
+                    $locale = App::getLocale();
+                }
+                $path = self::$names[$name]->fillPath($args);
+                return dirname($_SERVER['SCRIPT_NAME']).'/'.$locale.'/'.$path;
+            }
         }
         /**
          * Available options

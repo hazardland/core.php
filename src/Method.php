@@ -4,6 +4,8 @@
 
     class Method
     {
-        const GET = 1;
-        const POST = 2;
+        const GET = 'GET';
+        const POST = 'POST';
+        const PUT = 'PUT';
+        const DELETE = 'DELETE';
     }
