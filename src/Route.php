@@ -70,12 +70,7 @@
         {
             if (isset(self::$names[$name]))
             {
-                if ($locale==null)
-                {
-                    $locale = App::getLocale();
-                }
-                $path = self::$names[$name]->fillPath($args);
-                return dirname($_SERVER['SCRIPT_NAME']).'/'.$locale.'/'.$path;
+                return App::url($path);
             }
         }
         /**

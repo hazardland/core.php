@@ -56,7 +56,7 @@
 
                 //find variables in routes
                 $matches = [];
-                preg_match_all('/(\\\\\{[a-zA-Z0-9]+\\\\\})+/', $pattern, $matches);
+                preg_match_all('/(\\\\\{[a-zA-Z0-9_]+\\\\\})+/', $pattern, $matches);
 
                 if (isset($matches[0]) && count($matches[0]))
                 {

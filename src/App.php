@@ -81,6 +81,14 @@
         {
 
         }
+        public static function getUrl ($resource=null)
+        {
+            return dirname($_SERVER['SCRIPT_NAME']).(self::getLocale()!==null?'/'.self::getLocale():'').($resource!==null?'/'.$resource:'');
+        }
+        public static function url ($resource=null)
+        {
+            return self::getUrl($resource);
+        }
         public static function getPath()
         {
             if (is_object(self::$action))
@@ -92,8 +100,12 @@
         {
             self::$request = $request;
             self::$action = Route::getAction($request);
+            //debug (self::$action);
+            //debug ($_REQUEST);
             if (self::$action===false)
             {
+                header("HTTP/1.0 404 Not Found");
+                exit;
                 self::$action = Route::getDefault();
             }
             if (self::$action)
