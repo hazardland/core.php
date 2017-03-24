@@ -1,3 +1,5 @@
+This is framework module. To see implementation of simple app using this framework please check https://github.com/hazardland/app.php
+
 When you live in PHP world while developing various web Apps you are often required to have:
 1. Seo friendly nice urls:
 
@@ -111,4 +113,19 @@ When you live in PHP world while developing various web Apps you are often requi
         Session::setId('abcdifjklmnopqrstuwxwz');
         Session::getId();
         Session::destroy();
+    ```
+6. Generating route action url for named route:
+    ```php
+    Route:url('article',['id'=>17]);
+    //This will generate something like - en/blog/article/17
+    ```
+    Where route name ```'article'``` was defined as follows:
+    ```php
+    Route::add('blog/article/{id}', 'blog@article')->name('article');
+    ```
+7. Generating cusotm urls
+    ```php
+    App::url('blog/article/17');
+    //This will generate something like - en/blog/article/17
+    //With active locale (if defined any)
     ```
