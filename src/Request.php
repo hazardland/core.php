@@ -16,7 +16,7 @@
                 if (strpos($query,'/')!==false)
                 {
                     $locale = substr($query, 0, strpos($query,'/'));
-                    if (App::isLocale($locale))
+                    if (App::validLocale($locale))
                     {
                         App::setLocale($locale);
                         $query = substr($query,strpos($query,'/')+1);
@@ -25,7 +25,7 @@
                 else
                 {
                     $locale = $query;
-                    if (App::isLocale($locale))
+                    if (App::validLocale($locale))
                     {
                         App::setLocale($locale);
                         $query = '/';
