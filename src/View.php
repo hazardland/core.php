@@ -40,4 +40,12 @@
         {
             return self::$globals[$key];
         }
+        public static function script ($src)
+        {
+            return "<script src=\"".$src."\"></script>";
+        }
+        public static function style ($href)
+        {
+            return "<link rel=\"stylesheet\" href=\"".$href."\" />";
+        }
     }

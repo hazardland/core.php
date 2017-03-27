@@ -3,14 +3,13 @@ This is framework module. To see implementation of simple app using this framewo
 When you live in PHP world while developing various web Apps you are often required to have:
 <!-- MarkdownTOC -->
 
-- [Seo friendly nice URLs](#seo-friendly-nice-urls)
-- [With simpliest routing in background](#with-simpliest-routing-in-background)
-- [Defining locales, Always having active locale](#defining-locales-always-having-active-locale)
-- [Generating custom urls](#generating-custom-urls)
-- [Generating route action url for named route:](#generating-route-action-url-for-named-route)
-- [Database handling, connet to server only when connection is required](#database-handling-connet-to-server-only-when-connection-is-required)
-- [Abstract cache](#abstract-cache)
-- [Dealing with sessions](#dealing-with-sessions)
+- Seo friendly nice URLs
+- With simpliest routing in background
+- Defining locales, Always having active locale
+- Generating custom urls
+- Database handling, connet to server only when connection is required
+- Abstract cache
+- Dealing with sessions
 
 <!-- /MarkdownTOC -->
 
@@ -38,6 +37,10 @@ Route::add('blog/{post_id}-{*}', function($post_id){
 
 //for en/user/123
 Route::add('user/{id}', 'UserProfile@index');
+
+//Named route:
+Route::add('blog/article/{post}',function($post){})->name('article');
+//Later you an access this route by name 'article' in Route::url ...
 ```
 
 Where ```UserProfile@index``` you can imagine as file at ```./app/src/Controller/UserProfile.php```
@@ -91,36 +94,81 @@ App::getPath(); #get current app route path
 
 ## Generating custom urls
 
-```php
-App::url('blog/article/17');
-//This will generate something like - en/blog/article/17
-//With active locale (if defined any)
-```
+URLs with *locale* string using ```Route``` class:
 
 ```php
-//url
-App::getUrl(); #will return - /en
-//short version
-App::url(); #alias of App:getUrl()
-App::url('/my/custom/route'); #will return - /en/my/custom/route
-//Note that if you have your project`s public folder at url:
-// http://localhost/my/app/public
-//App::url() will return - my/app/public/en
+//If we have defined locales 'en','fr' and active locale is 'en'
+//while calling Route::url():
 
+Route::url('blog/article/17');
+//Will return - '/en/blog/article/17'
+
+Route::url('blog/article/17', 'fr');
+//Will return - 'fr/blog/article/17'
+
+//If your route is named as 'article'
+//Using for example Route::add('blog/article/{post}',function($post){})->name('article')
+//Then you can call Route::url passing route input parameters by array
+Route::url('article',['post'=>17]);
+//Will return - 'en/blog/article/17'
+
+//To add custom locale to URL while using route name:
+Route::url('article',['post'=>17],'fr');
+//Will return - 'fr/blog/article/17'
+
+//Of course if locale is not defined in APP
+Route::url('blog/article/17');
+//Will return - '/blog/article/17'
+
+//Note: while passing route pass do not begin string with '/'
 ```
 
-## Generating route action url for named route:
+Genarating URLs using ```App``` class (without locales):
 
 ```php
-Route:url('article',['id'=>17]);
-//This will generate something like - en/blog/article/17
+App::url('js/jquery.js');
+//Will return - '/js/jquery.js'
+
+//Note: do not start App::url string whit '/'
 ```
-Where route name ```'article'``` was defined as follows:
+
+If your App's public dir is located at server address:
+```http://myserver.com/my/app/public```
+
+Then calling ```App::url``` and ```Route::url``` will include this path:
 
 ```php
-Route::add('blog/article/{id}', 'blog@article')->name('article');
+App::url('js/jquery.js');
+//Will return '/my/app/public/js/jquery.js
+
+Route::url('blog/article/17');
+//Will return - /my/app/public/en/blog/article/17
 ```
 
+Redirecting using ```Route::redirect```:
+
+```php
+//Route::redirect() acceps same parameteres ass Route::url()
+Route::reditect ('article',['post'=>17],'fr'); //Will redirect to '/fr/blog/article/17'
+Route::reditect ('blog/article/17','fr'); //Will redirect to '/fr/blog/article/17'
+Route::reditect ('blog/article/17'); //Will redirect to '/en/blog/article/17'
+Route::redirect(); //Will redirect to '/en'
+
+//If yout App's public is at server's address http://myserver.com/my/app/public
+Route::reditect ('blog/article/17');
+//Will redirect to http://myserver.com/my/app/public/en/blog/article/17
+```
+
+Redirecting using ```App::redirect```:
+
+```php
+App::reditect('some/where'); //Will redirect to '/some/where'
+App::reditect(); //Will redirect to '/'
+
+//If yout App's public is at server's address http://myserver.com/my/app/public
+App::reditect('some/where'); //Will redirect to 'http://myserver.com/my/app/public/some/where'
+App::reditect(); //Will redirect to 'http://myserver.com/my/app/public'
+```
 
 ## Database handling, connet to server only when connection is required
 (And also hide connection setup from developers if needed)

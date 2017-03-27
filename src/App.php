@@ -111,11 +111,15 @@
         }
         public static function getUrl ($resource=null)
         {
-            return dirname($_SERVER['SCRIPT_NAME']).(self::getLocale()!==null?'/'.self::getLocale():'').($resource!==null?'/'.$resource:'');
+            return dirname($_SERVER['SCRIPT_NAME']).($resource!==null?'/'.$resource:'');
         }
         public static function url ($resource=null)
         {
             return self::getUrl($resource);
+        }
+        public static function redirect ($resource)
+        {
+            header ('Location: '.self::url($resource));
         }
         public static function getPath()
         {

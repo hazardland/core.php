@@ -66,12 +66,32 @@
         {
             self::$names[$name] = $action;
         }
-        public static function url ($name, $args, $locale=null)
+        public static function url ($path, $args=[], $locale=null)
         {
-            if (isset(self::$names[$name]))
+            if (is_string($args))
             {
-                return App::url($path);
+                //allowing to pass $locale instead of $args
+                //this will allow calling Route::url('/path/to/route','en')
+                $locale = $args;
+                $args[] = null;
             }
+            if (isset(self::$names[$path]))
+            {
+                $result = self::$names[$path]->getPath();
+                if (is_array($args) && count($args)>0)
+                {
+                    foreach ($args as $key=>$value)
+                    {
+                        $result = str_replace('{'.$key.'}', $value, $result);
+                    }
+                }
+                $path = $result;
+            }
+            return App::url(($locale!==null?$locale.'/':(App::getLocale()!==null?App::getLocale().'/':'')).$path);
+        }
+        public static function redirect ($path, $args=[], $locale)
+        {
+            header ('Location: '.self::url($path, $args, $locale));
         }
         /**
          * Available options
