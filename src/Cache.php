@@ -5,9 +5,18 @@
     class Cache
     {
         private static $driver;
+        private static $prefix='';
         public static function init (\Core\Cache\Driver $driver)
         {
             self::$driver = $driver;
+        }
+        public static function setPrefix($prefix)
+        {
+            self::$prefix = $prefix;
+        }
+        public static function getPrefix()
+        {
+            return self::$prefix;
         }
         /**
          * store item in cache
@@ -17,7 +26,8 @@
          */
         public static function set($key, $value, $ttl=null)
         {
-            return self::$driver->set($key,$value,$ttl);
+            //debug(self::$prefix.'.'.$key);exit;
+            return self::$driver->set(self::$prefix.'.'.$key,$value,$ttl);
         }
         /**
          * retrieve item from cache
@@ -27,7 +37,8 @@
          */
         public static function get($key)
         {
-            return self::$driver->get($key);
+            //debug (self::$driver->get(self::$prefix.'.'.$key),self::$prefix.'.'.$key);exit;
+            return self::$driver->get(self::$prefix.'.'.$key);
         }
         /**
          * check if item exist by key
@@ -36,7 +47,7 @@
          */
         public static function exists($key)
         {
-            return self::$driver->exists($key);
+            return self::$driver->exists(self::$prefix.'.'.$key);
         }
         /**
          * remove single cached item by key
@@ -45,7 +56,7 @@
          */
         public static function remove($key)
         {
-            return self::$driver->remove ($key);
+            return self::$driver->remove (self::$prefix.'.'.$key);
         }
         /**
          * clean all cached items
