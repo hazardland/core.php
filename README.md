@@ -217,7 +217,7 @@ Cache::setPrefix('myAppCachePrefix');
 ## Dealing with sessions
 There are things you need to maintain when opening session, sometimes you need to open session with custom id, sometimes you need to have session name to separate one app session from another app session, for this you can use session class:
 
-###Basic setup
+### Basic setup
 
 *Defining custom session name.* By default php sessions does not have name. But you can have as much sessions for same domain for same client as you like. Setting session name also defines cookie name in which session id is stored in client's browser (default cookie name is PHPSESSID)
 ```php
