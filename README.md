@@ -217,9 +217,9 @@ Cache::setPrefix('myAppCachePrefix');
 ## Dealing with sessions
 There are things you need to maintain when opening session, sometimes you need to open session with custom id, sometimes you need to have session name to separate one app session from another app session, for this you can use session class:
 
-####Basic setup
+###Basic setup
 
-Defining custom session name. By default php sessions does not have name. But you can have as much sessions for same domain for same client as you like. Setting session name also defines cookie name in which session id is stored in client's browser (default cookie name is PHPSESSID)
+*Defining custom session name.* By default php sessions does not have name. But you can have as much sessions for same domain for same client as you like. Setting session name also defines cookie name in which session id is stored in client's browser (default cookie name is PHPSESSID)
 ```php
 Session::setName("myAppSessionName");
 //This will not start new session
@@ -231,7 +231,7 @@ Custom session id. In some custom scenarios you might need to set your session i
 Session::setId($myCustomSessionId);
 ```
 
-Opening session. While colled ```Session::open()``` will use predefined session name (if any) and will use predefined session id (if any, or will use php's default session id which is provided by cookie).
+Opening session. While called ```Session::open()``` will use predefined session name (if any) and will use predefined session id (if any, or will use php's default session id which is provided by cookie).
 ```php
 Session::open();
 
@@ -269,7 +269,7 @@ $values = Session::all('aaa.');
 
 Session::clean('aaa.'); //Will remove 'aaa.key1','aaa.key2' and 'aaa.key3' from session
 
-//Where 'aaa.' is just a string prefix and could be anything like ending on any symbol
+//Where 'aaa.' is just a string prefix and could be anything like ending on any symbol.
 ```
 
 
