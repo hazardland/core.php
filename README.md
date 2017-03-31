@@ -10,6 +10,7 @@ When you live in PHP world while developing various web Apps you are often requi
 - Database handling, connet to server only when connection is required
 - Abstract cache
 - Dealing with sessions
+    - Basic setup
 
 <!-- /MarkdownTOC -->
 
@@ -148,7 +149,7 @@ Route::url('blog/article/17');
 Redirecting using ```Route::redirect```:
 
 ```php
-//Route::redirect() acceps same parameteres ass Route::url()
+//Route::redirect() accepts same parameteres as Route::url()
 Route::reditect ('article',['post'=>17],'fr'); //Will redirect to '/fr/blog/article/17'
 Route::reditect ('blog/article/17','fr'); //Will redirect to '/fr/blog/article/17'
 Route::reditect ('blog/article/17'); //Will redirect to '/en/blog/article/17'
@@ -196,31 +197,88 @@ Database::get()->query("SELECT 1");
 ```php
 //This line goes in config
 Cache::init(new \Core\Cache\Driver\APCu());
+```
+
+Currently core.php comes with APC and APCu cache drivers.
+To make/use custom cache driver just implement \Core\Cache\Driver interface and use it via ```Cache::init()```.
+
+```php
 //usage
 Cache::set('key','value');
 Cache::get('key');
 Cache::exists('key');
 Cache::remove('key');
 Cache::clean();
+
+//Isolating app cache from another apps caches
+Cache::setPrefix('myAppCachePrefix');
 ```
 
 ## Dealing with sessions
 There are things you need to maintain when opening session, sometimes you need to open session with custom id, sometimes you need to have session name to separate one app session from another app session, for this you can use session class:
 
+####Basic setup
+
+Defining custom session name. By default php sessions does not have name. But you can have as much sessions for same domain for same client as you like. Setting session name also defines cookie name in which session id is stored in client's browser (default cookie name is PHPSESSID)
 ```php
-//this goes in config
-Session::setName('myApp');
-//this is called before ob_start
-Session::open('abcdifjklmnopqrstuwxwz');
-//basic usage
+Session::setName("myAppSessionName");
+//This will not start new session
+//But if session is started will use specified name for session
+```
+
+Custom session id. In some custom scenarios you might need to set your session id before session is started in this case you cane:
+```php
+Session::setId($myCustomSessionId);
+```
+
+Opening session. While colled ```Session::open()``` will use predefined session name (if any) and will use predefined session id (if any, or will use php's default session id which is provided by cookie).
+```php
+Session::open();
+
+//You can also call:
+Session::open($myCustomSessionId);
+```
+
+Basically after starting session you can use ```$_SESSION``` variable. But session class provides some additional comfort:
+
+Separating app's session variables under same session name with custom prefix:
+```php
+Session::setPrefix('myApp');
+```
+After this all variables set by ```Session::set('myKey1','myValue')``` will be stored under prefix key like: ```$_SESSION['myApp']['myKey1']``` and other session variable manipulation functions will consider also app's session prefix.
+
+
+Setting and getting:
+```php
 Session::set('key','value');
-Session::get('key');
-Session::all();
-//this is to manage
-Session::clean();
-Session::close();
-Session::getName();
-Session::setId('abcdifjklmnopqrstuwxwz');
-Session::getId();
-Session::destroy();
+Session::get('key','default'); //if key is not set will return 'default'
+Session::all(); //returns all session variables under app's prefix
+Session::remove('key');
+Session::clean(); //removes all session variables under app's prefix
+```
+
+Session variable grouping effect:
+```php
+Session::set('aaa.key1','value1');
+Session::set('aaa.key2','value2');
+Session::set('aaa.key3','value3');
+Session::set('bbb.key1','value1');
+
+$values = Session::all('aaa.');
+//In values we have ['aaa.key1'=>'value1','aaa.key2'=>'value2','aaa.key3'=>'value3']
+
+Session::clean('aaa.'); //Will remove 'aaa.key1','aaa.key2' and 'aaa.key3' from session
+
+//Where 'aaa.' is just a string prefix and could be anything like ending on any symbol
+```
+
+
+Closing session
+```php
+Session::close(); //Will close session and session data will be available for next Session::open
+```
+
+Destroy session
+```php
+Session::destroy(); //will close and delete session
 ```

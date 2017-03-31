@@ -5,7 +5,7 @@
     class Cache
     {
         private static $driver;
-        private static $prefix='';
+        private static $prefix='app';
         public static function init (\Core\Cache\Driver $driver)
         {
             self::$driver = $driver;

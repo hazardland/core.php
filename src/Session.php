@@ -9,9 +9,9 @@
      */
     class Session
     {
+        private static $prefix = 'app';
         private static $id;
         private static $name;
-        private static $open = false;
         /**
          * set session name
          * if you want that your sessions were created under some name
@@ -56,11 +56,10 @@
             {
                 self::$id = $id;
             }
-            if (self::$open===false || $id!==null)
+            if (session_status()==PHP_SESSION_NONE || (self::$id!==null && session_id()!=self::$id))
             {
-                if (session_id()!=='' && session_id()!=self::$id)
+                if (session_status()==PHP_SESSION_ACTIVE && session_id()!=self::$id)
                 {
-                    debug ('opening session with id '.self::$id);
                     self::close();
                 }
                 if (self::$id!==null)
@@ -73,34 +72,32 @@
                 }
                 if (session_start())
                 {
-                    self::$id = session_id();
-                    self::$open = true;
-                }
-                else
-                {
-                    self::$open = false;
+                    return true;
                 }
             }
-            return self::$open;
+            return false;
         }
         public static function close ()
         {
-            //if (self::$open)
-            //{
-                debug ('closing session');
-                session_write_close ();
-                self::$open = false;
-            //}
+            session_write_close ();
         }
         public static function destroy ()
         {
-            if (self::$open)
-            {
-                setcookie (session_name(), null, -1, '/');
-                session_unset ();
-                session_destroy ();
-                self::$open = false;
-            }
+            setcookie (session_name(), null, -1, '/');
+            session_unset ();
+            session_destroy ();
+        }
+
+        //Below are functions which are recommended to use in case of usage Session::setPrefix
+        //Otherwise just use $_SESSION global variable which works great
+
+        public static function setPrefix($prefix)
+        {
+            self::$prefix = $prefix;
+        }
+        public static function getPrefix()
+        {
+            return self::$prefix;
         }
         /**
          * store item in session
@@ -110,10 +107,7 @@
          */
         public static function set($key, $value)
         {
-            if (self::open())
-            {
-                $_SESSION[$key] = $value;
-            }
+            $_SESSION[self::$prefix][$key] = $value;
         }
         /**
          * retrieve item from session
@@ -121,32 +115,22 @@
          * @param \Closure|null $callback if not found returns callback result
          * @return mixed result
          */
-        public static function get($key)
+        public static function get($key, $default=null)
         {
-            if (self::open())
+            if (!isset($_SESSION[self::$prefix][$key]))
             {
-                return $_SESSION[$key];
+                return $default;
             }
+            return $_SESSION[self::$prefix][$key];
         }
-        public static function all ()
-        {
-            if (self::open())
-            {
-                return $_SESSION;
-            }
-        }
-        /**
+       /**
          * check if item exist by key
          * @param  string $key item key
          * @return bool exists result
          */
         public static function exists($key)
         {
-            if (self::open())
-            {
-                return isset($_SESSION[$key]);
-            }
-            return false;
+            return isset($_SESSION[self::$prefix][$key]);
         }
         /**
          * remove single sessiond item by key
@@ -155,18 +139,48 @@
          */
         public static function remove($key)
         {
-            if (self::open())
-            {
-                unset($_SESSION[$key]);
-            }
-            return false;
+            unset($_SESSION[self::$prefix][$key]);
         }
-        public function clean ()
+        public static function all ($prefix=null)
         {
-            if (self::open())
+            if ($prefix!==null)
             {
-                $_SESSION = array();
+                if (is_array($_SESSION[self::$prefix]))
+                {
+                    $result = [];
+                    foreach ($_SESSION[self::$prefix] as $key => &$value)
+                    {
+                        if (strpos($key,$prefix)===0)
+                        {
+                            $result[$key] = $value;
+                        }
+                    }
+                    return $result;
+                }
             }
-            return false;
+            else
+            {
+                return $_SESSION[self::$prefix];
+            }
+        }
+        public static function clean ($prefix=null)
+        {
+            if ($prefix!==null)
+            {
+                if (is_array($_SESSION[self::$prefix]))
+                {
+                    foreach ($_SESSION[self::$prefix] as $key => &$value)
+                    {
+                        if (strpos($key,$prefix)===0)
+                        {
+                            unset($_SESSION[self::$prefix][$key]);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                $_SESSION[self::$prefix] = array();
+            }
         }
     }
