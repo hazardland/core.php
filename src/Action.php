@@ -127,9 +127,30 @@
         }
         public function execute (Request $request)
         {
+            $result = null;
             if (is_object($this->callback))
             {
-                call_user_func_array ($this->callback, $this->getInput($request->getPath()));
+                $result = call_user_func_array ($this->callback, $this->getInput($request->getPath()));
+            }
+            else
+            {
+                $separator = strpos($this->callback, '@');
+                if ($separator!==false)
+                {
+                    $controller = substr ($this->callback, 0, $separator);
+                    $method = substr ($this->callback, $separator+1);
+                    if ($controller!==false)
+                    {
+                        $class = '\\App\\Controller\\'.$controller;
+                        if ($method===false)
+                        {
+                            $method = 'index';
+                        }
+                        class_alias ($class,'Controller');
+                        $object = new $class;
+                        call_user_func_array ([$object, $method], $this->getInput($request->getPath()));
+                    }
+                }
             }
         }
 
