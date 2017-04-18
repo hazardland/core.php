@@ -146,7 +146,7 @@
                         {
                             $method = 'index';
                         }
-                        class_alias ($class,'Controller');
+                        //class_alias ($class,'Controller');
                         $object = new $class;
                         call_user_func_array ([$object, $method], $this->getInput($request->getPath()));
                     }
