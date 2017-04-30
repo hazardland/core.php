@@ -8,6 +8,7 @@
         public static $actions = []; //later make private
         private static $options = [];
         private static $names = [];
+        private static $filters = [];
         /**
          * find and return action for request if any
          * @param  \Core\Request $request [description]
@@ -66,6 +67,25 @@
         {
             self::$names[$name] = $action;
         }
+        /**
+         * Assume you have --> Route::add('blog/article/{id}',...)->name('article')
+         * You can generate url for this route in 4 different ways:
+         *
+         * With precompiled string:
+         *
+         * Route::url('blog/article/17') => 'en/blog/article/17'
+         * Route::url('blog/article/17','fr') => 'fr/blog/article/17'
+         *
+         * With route name and args as array:
+         *
+         * Route::url('article',['id'=>17]) => 'en/blog/article/17'
+         * Route::url('article',['id'=>17],'fr') => 'fr/blog/article/17'
+         *
+         * @param  string $path route path or name
+         * @param  array  $args route args or locale
+         * @param  locale $locale route locale
+         * @return string url
+         */
         public static function url ($path, $args=[], $locale=null)
         {
             if (is_string($args))
@@ -92,6 +112,7 @@
         public static function redirect ($path, $args=[], $locale)
         {
             header ('Location: '.self::url($path, $args, $locale));
+            exit;
         }
         /**
          * Available options
@@ -110,5 +131,13 @@
             self::$options = $options;
             $callback();
             self::$options = [];
+        }
+        public static function filter ($name, $callback)
+        {
+            self::$filters[$name] = $callback;
+        }
+        public static function getFilter ($name)
+        {
+            return self::$filters[$name];
         }
     }

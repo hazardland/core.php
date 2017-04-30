@@ -42,10 +42,10 @@
         }
         public static function script ($src)
         {
-            return "<script src=\"".$src."\"></script>";
+            return "<script src=\"".App::url($src)."\"></script>";
         }
         public static function style ($href)
         {
-            return "<link rel=\"stylesheet\" href=\"".$href."\" />";
+            return "<link rel=\"stylesheet\" href=\"".App::url($href)."\" />";
         }
     }

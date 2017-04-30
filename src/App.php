@@ -87,7 +87,11 @@
         }
         public static function isUser()
         {
-
+            if (Session::get('user.id'))
+            {
+                return true;
+            }
+            return false;
         }
         public static function getUser()
         {
@@ -109,17 +113,39 @@
         {
 
         }
-        public static function getUrl ($resource=null)
+        // public static function getUrl ($resource=null)
+        // {
+
+        // }
+        /**
+         * Generate url for app resource
+         *
+         * In basic case App::url('js/jquery.js') will return '/js/jquery.js'
+         *
+         * But if your app is located on server sample.com/my/app than
+         * App::url('js/jquery.js') will return '/my/app/js/jquery.js'
+         *
+         * So basically this function protects breaking your app if you move its code
+         * from server to server from folder to folder
+         *
+         * @param  string $resource resource name
+         * @return string url
+         */
+        public static function url ($resource=null)
         {
             return dirname($_SERVER['SCRIPT_NAME']).($resource!==null?'/'.$resource:'');
         }
-        public static function url ($resource=null)
+        public static function header ($code)
         {
-            return self::getUrl($resource);
+            if ($code==404)
+            {
+                header("HTTP/1.0 404 Not Found");
+            }
         }
         public static function redirect ($resource)
         {
             header ('Location: '.self::url($resource));
+            exit;
         }
         public static function getPath()
         {
@@ -128,11 +154,11 @@
                 return self::$action->getPath();
             }
         }
-        public function path ()
+/*        public function path ()
         {
             return self::getPath();
         }
-        public static function run (Request $request)
+*/        public static function run (Request $request)
         {
             self::$request = $request;
             self::$action = Route::getAction($request);
@@ -140,7 +166,8 @@
             //debug ($_REQUEST);
             if (self::$action===false)
             {
-                header("HTTP/1.0 404 Not Found");
+                self::header (404);
+                View::render('error/404',['request'=>$request]);
                 exit;
                 self::$action = Route::getDefault();
             }
