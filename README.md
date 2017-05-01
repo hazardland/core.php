@@ -1,5 +1,7 @@
 This is framework module. To see implementation of simple app using this framework please check https://github.com/hazardland/app.php
 
+*For detailed documentation:* https://github.com/hazardland/core.php/wiki
+
 When you live in PHP world while developing various web Apps you are often required to have:
 <!-- MarkdownTOC -->
 
