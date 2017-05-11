@@ -87,7 +87,7 @@
         }
         public static function isUser()
         {
-            if (Session::get('user.id'))
+            if (Auth::check)
             {
                 return true;
             }
@@ -95,23 +95,11 @@
         }
         public static function getUser()
         {
-
+            return Auth::user();
         }
         public static function getUserId ()
         {
-
-        }
-        public static function getUserLogin()
-        {
-
-        }
-        public static function getUserName()
-        {
-
-        }
-        public static function getUserEmail()
-        {
-
+            Auth::id();
         }
         // public static function getUrl ($resource=null)
         // {

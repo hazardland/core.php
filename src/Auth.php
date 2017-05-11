@@ -17,8 +17,8 @@
 
 	class Auth
 	{
-		private $drivers = [];
-		private $model;
+		private static $drivers = [];
+		private static $model;
 		public static function addDriver (\Core\Auth\Driver $driver)
 		{
 			self::$drivers[$driver->getName()] = $driver;
@@ -26,14 +26,18 @@
 		public static function getDriver($name)
 		{
 			$name = strtolower($name);
-			if (isset($this->drivers[$name]))
+			if (isset(self::$drivers[$name]))
 			{
-				return $this->drivers[$name];
+				return self::$drivers[$name];
 			}
 		}
 		public static function setModel (\Core\Auth\Model $model)
 		{
-			$this->model = $model;
+			self::$model = $model;
+		}
+		public static function getModel()
+		{
+			return self::$model;
 		}
 		public static function setId($id)
 		{
@@ -47,7 +51,7 @@
 		{
 			if (self::$user===null && self::getId())
 			{
-				self::$user = $this->model->getUser(self::getId());
+				self::$user = self::$model->getUser(self::getId());
 			}
 		}
 		public static function check ()

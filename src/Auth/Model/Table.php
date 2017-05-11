@@ -2,7 +2,7 @@
 
 	namespace Core\Auth\Model;
 
-	class Table implements Core\Auth\Model
+	class Table implements \Core\Auth\Model
 	{
 		public function getUser ($id)
 		{

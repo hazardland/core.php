@@ -38,7 +38,10 @@
          */
         public static function get ($key)
         {
-            return self::$globals[$key];
+            if (isset(self::$globals[$key]))
+            {
+                return self::$globals[$key];
+            }
         }
         public static function script ($src)
         {

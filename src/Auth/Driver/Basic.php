@@ -9,6 +9,3 @@
 			return 'basic';
 		}
 	}
-
-	Auth::getDriver('basic')->login($_REQUEST['email'],$_REQUEST['password']);
-	Auth::getModel()->hit($id);
