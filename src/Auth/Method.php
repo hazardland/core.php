@@ -2,11 +2,12 @@
 
 	namespace Core\Auth;
 
-	interface Driver
+	interface Method
 	{
 		/**
 		 * Get driver name
 		 * @return [type] [description]
 		 */
 		public function getName();
+		public function logout();
 	}
